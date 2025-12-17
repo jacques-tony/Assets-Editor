@@ -137,6 +137,13 @@
                                 </MenuItem.Icon>
                             </MenuItem>
                         </MenuItem>
+                        <MenuItem Header="_Tools">
+                            <MenuItem Header="Lua Script Editor" Click="OpenLuaWindow_Click">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="Code"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </MenuItem>
                         <MenuItem Header="_About">
                             <MenuItem Header="About" Click="About_Click">
                                 <MenuItem.Icon>
@@ -203,20 +210,30 @@
                                         </StackPanel>
                                         <CheckBox x:Name="A_FlagDontHide" Content="Dont Hide" Margin="0,5,0,0"/>
                                         <CheckBox x:Name="A_FlagTranslucent" Content="Translucent" Margin="0,5,0,5"/>
-                                        <StackPanel Width="320" Orientation="Horizontal" HorizontalAlignment="Left" Height="20">
-                                            <CheckBox x:Name="A_FlagShift" Content="Shift" Width="160" Margin="0,0,0,0" Padding="4,0,0,0"/>
-                                            <Label Content="X:" Width="15" Padding="0,0,0,0" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                            <xctk:IntegerUpDown x:Name="A_FlagShiftX" Margin="0,0,0,0" Width="50" Minimum="0" Maximum="32"/>
-                                            <Label Content="Y:" Width="15" Padding="0,0,0,0" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                            <xctk:IntegerUpDown x:Name="A_FlagShiftY" Margin="0,0,0,0" Width="60" Minimum="0" Maximum="32"/>
+                                    </StackPanel>
+                                    <StackPanel Margin="5,0,5,0" >
+                                        <StackPanel Width="320" Height="50" Orientation="Horizontal" HorizontalAlignment="Left">
+                                            <CheckBox VerticalAlignment="Top" x:Name="A_FlagShift" Content="Shift" Width="170" Margin="0,3,0,0" Padding="4,0,0,0"/>
+                                            <StackPanel>
+                                                <StackPanel Orientation="Horizontal" x:Name="A_StandardShiftCoords">
+                                                    <Label Content="X:" Width="15" Padding="0,0,0,0" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                    <xctk:IntegerUpDown x:Name="A_FlagShiftX" Margin="0,0,0,0" Width="50" Minimum="0" Maximum="32"/>
+                                                    <Label Content="Y:" Width="15" Padding="0,0,0,0" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                    <xctk:IntegerUpDown x:Name="A_FlagShiftY" Margin="0,0,0,0" Width="50" Minimum="0" Maximum="32"/>
+                                                </StackPanel>
+                                                <StackPanel Margin="0,5,0,0" Orientation="Horizontal" x:Name="A_ExtendedShiftCoords">
+                                                    <Label Content="A:" Width="15" Padding="0,0,0,0" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                    <xctk:IntegerUpDown x:Name="A_FlagShiftA" Margin="0,0,0,0" Width="50" Minimum="0" Maximum="32"/>
+                                                    <Label Content="B:" Width="15" Padding="0,0,0,0" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                    <xctk:IntegerUpDown x:Name="A_FlagShiftB" Margin="0,0,0,0" Width="50" Minimum="0" Maximum="32"/>
+                                                </StackPanel>
+                                            </StackPanel>
                                         </StackPanel>
                                         <StackPanel Width="320" Orientation="Horizontal" HorizontalAlignment="Left" Height="20" Margin="0,5,0,0">
                                             <CheckBox x:Name="A_FlagHeight" Content="Height" Width="160" Margin="0,-1,0,0" Padding="4,0,0,0"/>
                                             <Label Content="Elevation:" Width="90" Padding="0,0,0,0" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                                             <xctk:IntegerUpDown x:Name="A_FlagElevation" Margin="0,0,0,0" Width="60" Minimum="0" Maximum="32"/>
                                         </StackPanel>
-                                    </StackPanel>
-                                    <StackPanel Margin="5,0,5,0" >
                                         <CheckBox x:Name="A_FlagLyingObject" Content="Lying Object"/>
                                         <CheckBox x:Name="A_FlagAnimateAlways" Content="Animate Always" Margin="0,5,0,0"/>
                                         <StackPanel Width="320" Orientation="Horizontal" HorizontalAlignment="Left" Height="22" Margin="0,5,0,0">
@@ -337,6 +354,41 @@
                                             <CheckBox x:Name="A_FlagUnwrap" Content="Unwrap"/>
                                         </StackPanel>
                                         <CheckBox x:Name="A_FlagTopeffect" Content="Top Effect" Margin="0,5,0,0"/>
+                                        <CheckBox x:Name="A_FlagWearout" Content="Show Charges" Margin="0,5,0,0"/>
+                                        <StackPanel x:Name="A_FlagWingsCoords" Width="320" Height="100" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,5,0,0">
+                                            <CheckBox VerticalAlignment="Top" x:Name="A_FlagWingsOffset" Content="Wings Offset (OTC)" Width="135" Padding="4,0,0,0"/>
+
+                                            <StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Label Content="North" Width="32" Padding="0,0,0,0" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                    <Label Content="X:" Width="12" Padding="0,0,0,0" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                    <xctk:IntegerUpDown x:Name="A_FlagWingsNorthX" Margin="0,0,0,0" Width="50" Minimum="-128" Maximum="128"/>
+                                                    <Label Content="Y:" Width="12" Padding="0,0,0,0" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                    <xctk:IntegerUpDown x:Name="A_FlagWingsNorthY" Margin="0,0,0,0" Width="50" Minimum="-128" Maximum="128"/>
+                                                </StackPanel>
+                                                <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+                                                    <Label Content="East" Width="32" Padding="0,0,0,0" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                    <Label Content="X:" Width="12" Padding="0,0,0,0" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                    <xctk:IntegerUpDown x:Name="A_FlagWingsEastX" Margin="0,0,0,0" Width="50" Minimum="-128" Maximum="128"/>
+                                                    <Label Content="Y:" Width="12" Padding="0,0,0,0" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                    <xctk:IntegerUpDown x:Name="A_FlagWingsEastY" Margin="0,0,0,0" Width="50" Minimum="-128" Maximum="128"/>
+                                                </StackPanel>
+                                                <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+                                                    <Label Content="South" Width="32" Padding="0,0,0,0" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                    <Label Content="X:" Width="12" Padding="0,0,0,0" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                    <xctk:IntegerUpDown x:Name="A_FlagWingsSouthX" Margin="0,0,0,0" Width="50" Minimum="-128" Maximum="128"/>
+                                                    <Label Content="Y:" Width="12" Padding="0,0,0,0" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                    <xctk:IntegerUpDown x:Name="A_FlagWingsSouthY" Margin="0,0,0,0" Width="50" Minimum="-128" Maximum="128"/>
+                                                </StackPanel>
+                                                <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+                                                    <Label Content="West" Width="32" Padding="0,0,0,0" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                    <Label Content="X:" Width="12" Padding="0,0,0,0" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                    <xctk:IntegerUpDown x:Name="A_FlagWingsWestX" Margin="0,0,0,0" Width="50" Minimum="-128" Maximum="128"/>
+                                                    <Label Content="Y:" Width="12" Padding="0,0,0,0" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                    <xctk:IntegerUpDown x:Name="A_FlagWingsWestY" Margin="0,0,0,0" Width="50" Minimum="-128" Maximum="128"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </StackPanel>
                                     </StackPanel>
                                 </WrapPanel>
                             </ScrollViewer>
@@ -347,10 +399,27 @@
                             <ScrollViewer>
                                 <WrapPanel Orientation="Horizontal" MaxWidth="700">
                                     <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Width="321" Margin="5,0,5,0">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5,0,0">
+                                            <Label Content="Zoom:" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                            <Slider x:Name="ZoomSlider"
+                                                    Minimum="0.5"
+                                                    Maximum="4"
+                                                    Value="1"
+                                                    TickFrequency="0.1"
+                                                    IsSnapToTickEnabled="True"
+                                                    Width="150"
+                                                    Margin="5"
+                                                    VerticalAlignment="Center"
+                                            />
+                                            <Button Margin="10,0,0,0" Content="Reset" Click="ResetZoom_Click" VerticalAlignment="Center"/>
+                                        </StackPanel>
                                         <Grid Margin="20,20,0,0" Width="265" Height="265" HorizontalAlignment="Left" VerticalAlignment="Top">
                                             <Border BorderThickness="1" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="#FF4F4F4F" Background="{Binding SelectedColor, ElementName=SprBackgroundPicker, Converter={StaticResource NullableColorToBrushConverter} }">
                                                 <Grid>
                                                     <Grid x:Name="SpriteViewerGrid" ShowGridLines="false" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                        <Grid.LayoutTransform>
+                                                            <ScaleTransform ScaleX="{Binding Value, ElementName=ZoomSlider}" ScaleY="{Binding Value, ElementName=ZoomSlider}"/>
+                                                        </Grid.LayoutTransform>
                                                         <Grid.RowDefinitions>
                                                             <RowDefinition Height="32"/>
                                                             <RowDefinition Height="32"/>

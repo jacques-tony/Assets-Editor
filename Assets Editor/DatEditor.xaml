@@ -13,9 +13,17 @@
         <local:ArithmeticConverter x:Key="ArithmeticConverter" />
         <local:NullableColorToBrushConverter x:Key="NullableColorToBrushConverter" />
         <local:BooleanInverter x:Key="BooleanInverter"/>
+        <local:BooleanOrInverterConverter x:Key="BooleanOrInverterConverter"/>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
     </Window.Resources>
-    <Grid x:Name="MainContent" HorizontalAlignment="Center" VerticalAlignment="Stretch" IsHitTestVisible="{Binding ElementName=ComppileDialogHost, Path=IsOpen, Mode=OneWay, Converter={StaticResource BooleanInverter}}">
+    <Grid x:Name="MainContent" HorizontalAlignment="Center" VerticalAlignment="Stretch">
+        <Grid.IsHitTestVisible>
+            <MultiBinding Converter="{StaticResource BooleanOrInverterConverter}">
+                <!-- If either dialog is open, background must NOT be clickable -->
+                <Binding ElementName="ComppileDialogHost" Path="IsOpen"/>
+                <Binding ElementName="CompileToImagesDialogHost" Path="IsOpen"/>
+            </MultiBinding>
+        </Grid.IsHitTestVisible>
         <materialDesign:DialogHost Grid.Row="1" x:Name="ComppileDialogHost" OverlayBackground="Gray" >
             <materialDesign:DialogHost.DialogContent>
                 <GroupBox x:Name="CompileBox" Header="Export To Legacy" Width="350">
@@ -228,6 +236,11 @@
                                     <materialDesign:PackIcon Kind="ContentSaveCogOutline" />
                                 </MenuItem.Icon>
                             </MenuItem>
+                            <MenuItem Header="Import AEC/OBD" Click="ImportItems_Click">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="Download" />
+                                </MenuItem.Icon>
+                            </MenuItem>
                             <MenuItem Header="Export to legacy" Click="CompileLegacy_Click">
                                 <MenuItem.Icon>
                                     <materialDesign:PackIcon Kind="FileDocumentArrowRight" />
@@ -253,6 +266,13 @@
                             <MenuItem Header="Logger" Click="ShowLogger">
                                 <MenuItem.Icon>
                                     <materialDesign:PackIcon Kind="MathLog" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </MenuItem>
+                        <MenuItem Header="_Tools">
+                            <MenuItem Header="Lua Script Editor" Click="OpenLuaWindow_Click">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="Code"/>
                                 </MenuItem.Icon>
                             </MenuItem>
                         </MenuItem>
@@ -584,9 +604,26 @@
                             <ScrollViewer>
                                 <WrapPanel Orientation="Horizontal" MaxWidth="700">
                                     <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Width="321" Margin="5,0,5,0">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5,0,0">
+                                            <Label Content="Zoom:" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                            <Slider x:Name="ZoomSlider"
+                                                    Minimum="0.5"
+                                                    Maximum="4"
+                                                    Value="1"
+                                                    TickFrequency="0.1"
+                                                    IsSnapToTickEnabled="True"
+                                                    Width="150"
+                                                    Margin="5"
+                                                    VerticalAlignment="Center"
+                                            />
+                                            <Button Margin="10,0,0,0" Content="Reset" Click="ResetZoom_Click" VerticalAlignment="Center"/>
+                                        </StackPanel>
                                         <Grid Margin="20,20,0,0" Width="265" Height="265" HorizontalAlignment="Left" VerticalAlignment="Top">
                                             <Border BorderThickness="1" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="#FF4F4F4F" Background="{Binding SelectedColor, ElementName=SprBackgroundPicker, Converter={StaticResource NullableColorToBrushConverter} }">
                                                 <Grid x:Name="SpriteViewerGrid" ShowGridLines="false" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                    <Grid.LayoutTransform>
+                                                        <ScaleTransform ScaleX="{Binding Value, ElementName=ZoomSlider}" ScaleY="{Binding Value, ElementName=ZoomSlider}"/>
+                                                    </Grid.LayoutTransform>
                                                     <Grid.RowDefinitions>
                                                         <RowDefinition Height="32"/>
                                                     </Grid.RowDefinitions>
@@ -715,7 +752,7 @@
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Height="20" Margin="0,10,0,0">
                                             <Label Content="Bounding Square:" Width="120" Padding="0,0,0,0" Margin="10,0,0,0" HorizontalAlignment="Left"/>
-                                            <xctk:IntegerUpDown x:Name="A_SprBounding" Margin="0,0,0,0" Width="110" Minimum="0" Maximum="64" ValueChanged="A_Texture_ValueChanged"/>
+                                            <xctk:IntegerUpDown x:Name="A_SprBounding" Margin="0,0,0,0" Width="110" Minimum="0" Maximum="384" ValueChanged="A_Texture_ValueChanged"/>
                                         </StackPanel>
                                         <CheckBox x:Name="A_SprOpaque" Content="Is Opaque" HorizontalAlignment="Left" Margin="5,5,0,0"/>
                                     </StackPanel>
