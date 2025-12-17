@@ -99,6 +99,9 @@
                                         <Button x:Name="ObjectImportAs" Style="{StaticResource MaterialDesignIconButton}" ToolTip="Import Object As" materialDesign:RippleAssist.IsDisabled="True" PreviewMouseLeftButtonDown="ObjectImportAs_PreviewMouseLeftButtonDown" VerticalAlignment="Center">
                                             <materialDesign:PackIcon Kind="PuzzleEdit" Width="25" Height="25"/>
                                         </Button>
+                                        <Button x:Name="SetMarketFromAppearance" Visibility="Collapsed" Style="{StaticResource MaterialDesignIconButton}" ToolTip="Set Trade/Show to Appearance ID" materialDesign:RippleAssist.IsDisabled="True" Click="SetMarketFromAppearance_Click" VerticalAlignment="Center">
+                                            <materialDesign:PackIcon Kind="SwapHorizontal" Width="25" Height="25"/>
+                                        </Button>
                                     </StackPanel>
                                 </Border>
                             </Grid>

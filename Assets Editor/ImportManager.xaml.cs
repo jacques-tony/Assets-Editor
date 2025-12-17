@@ -30,6 +30,7 @@ namespace Assets_Editor
             _editor = editor;
             this.Closed += ImportManager_Closed;
         }
+        
         private Appearances ImportAppearances;
         private Dictionary<uint, Sprite> sprites = new Dictionary<uint, Sprite>();
         private List<ShowList> AllSprList = new List<ShowList>();
@@ -186,6 +187,14 @@ namespace Assets_Editor
             {
                 ObjListViewSelectedIndex.Value = (int)showList.Id;
             }
+            try
+            {
+                if (SetMarketFromAppearance != null)
+                {
+                    SetMarketFromAppearance.Visibility = (ObjListView.SelectedItems.Count > 0) ? Visibility.Visible : Visibility.Collapsed;
+                }
+            }
+            catch { }
         }
         private void ObjListViewSelectedIndex_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
@@ -351,6 +360,61 @@ namespace Assets_Editor
         private void ObjectImportAs_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             ImportAsDialogHost.IsOpen = true;
+        }
+        private void SetMarketFromAppearance_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var selectedItems = _editor.ObjListView.SelectedItems.Cast<ShowList>().ToList();
+                if (!selectedItems.Any())
+                    return;
+
+                int menuIndex = _editor.ObjectMenu.SelectedIndex;
+
+                foreach (var sel in selectedItems)
+                {
+                    Appearance app = null;
+                    if (menuIndex == 0)
+                        app = MainWindow.appearances.Outfit.FirstOrDefault(a => a.Id == sel.Id);
+                    else if (menuIndex == 1)
+                        app = MainWindow.appearances.Object.FirstOrDefault(a => a.Id == sel.Id);
+                    else if (menuIndex == 2)
+                        app = MainWindow.appearances.Effect.FirstOrDefault(a => a.Id == sel.Id);
+                    else if (menuIndex == 3)
+                        app = MainWindow.appearances.Missile.FirstOrDefault(a => a.Id == sel.Id);
+
+                    if (app == null)
+                        continue;
+
+                    if (app.Flags == null)
+                        app.Flags = new AppearanceFlags();
+
+                    if (app.Flags.Market == null)
+                        app.Flags.Market = new AppearanceFlagMarket();
+
+                    app.Flags.Market.TradeAsObjectId = app.Id;
+                    app.Flags.Market.ShowAsObjectId = app.Id;
+                }
+
+                // Refresh editor list view
+                CollectionViewSource.GetDefaultView(_editor.ObjListView.ItemsSource).Refresh();
+
+                // Trigger the editor to reload the selected item by resetting selection index (avoids calling private method)
+                try
+                {
+                    if (_editor.ObjListView != null && _editor.ObjListView.SelectedItem != null)
+                    {
+                        int idx = _editor.ObjListView.SelectedIndex;
+                        _editor.ObjListView.SelectedIndex = -1;
+                        _editor.ObjListView.SelectedIndex = idx;
+                    }
+                }
+                catch { }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error setting market fields: {ex.Message}");
+            }
         }
         private void ConvertObject(object sender, RoutedEventArgs e)
         {

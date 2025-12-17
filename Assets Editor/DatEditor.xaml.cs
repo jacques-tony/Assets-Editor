@@ -354,6 +354,14 @@ namespace Assets_Editor
                 }
 
             }
+            try
+            {
+                if (SetMarketFromAppearance_Dat != null)
+                {
+                    SetMarketFromAppearance_Dat.Visibility = (ObjListView.SelectedItems.Count > 0) ? Visibility.Visible : Visibility.Collapsed;
+                }
+            }
+            catch { }
         }
 
         private void LoadSelectedObjectAppearances(Appearance ObjectAppearance)
@@ -365,6 +373,55 @@ namespace Assets_Editor
             ChangeGroupType(0);
             SprGroupSlider.ValueChanged += SprGroupSlider_ValueChanged;
 
+        }
+
+        private void SetMarketFromAppearance_Dat_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var selectedItems = ObjListView.SelectedItems.Cast<ShowList>().ToList();
+                if (!selectedItems.Any())
+                    return;
+
+                int menuIndex = ObjectMenu.SelectedIndex;
+
+                foreach (var sel in selectedItems)
+                {
+                    Appearance app = null;
+                    if (menuIndex == 0)
+                        app = MainWindow.appearances.Outfit.FirstOrDefault(a => a.Id == sel.Id);
+                    else if (menuIndex == 1)
+                        app = MainWindow.appearances.Object.FirstOrDefault(a => a.Id == sel.Id);
+                    else if (menuIndex == 2)
+                        app = MainWindow.appearances.Effect.FirstOrDefault(a => a.Id == sel.Id);
+                    else if (menuIndex == 3)
+                        app = MainWindow.appearances.Missile.FirstOrDefault(a => a.Id == sel.Id);
+
+                    if (app == null)
+                        continue;
+
+                    if (app.Flags == null)
+                        app.Flags = new AppearanceFlags();
+
+                    if (app.Flags.Market == null)
+                        app.Flags.Market = new AppearanceFlagMarket();
+
+                    app.Flags.Market.TradeAsObjectId = app.Id;
+                    app.Flags.Market.ShowAsObjectId = app.Id;
+                }
+
+                // Refresh view by toggling selection
+                if (ObjListView.SelectedItem != null)
+                {
+                    int idx = ObjListView.SelectedIndex;
+                    ObjListView.SelectedIndex = -1;
+                    ObjListView.SelectedIndex = idx;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error setting market fields: {ex.Message}");
+            }
         }
 
         private void ChangeGroupType(int group)
