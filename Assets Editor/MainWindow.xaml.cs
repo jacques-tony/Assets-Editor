@@ -20,6 +20,11 @@ using static Assets_Editor.LogView;
 
 namespace Assets_Editor;
 
+public enum ImportIdMode {
+    AppendAfterMax = 0,
+    PreserveImportedIds = 1
+}
+
 public class PresetSettings : INotifyPropertyChanged {
     private string _name = string.Empty;
     public string Name {
@@ -37,6 +42,7 @@ public class PresetSettings : INotifyPropertyChanged {
     public bool Transparent { get; set; }
     public bool FrameDurations { get; set; }
     public bool FrameGroups { get; set; }
+    public ImportIdMode ImportIdMode { get; set; } = ImportIdMode.AppendAfterMax;
     public string? ServerPath { get; set; }
     public string? ClientPath { get; set; }
 
@@ -51,6 +57,7 @@ public class PresetSettings : INotifyPropertyChanged {
         Transparent = false;
         FrameDurations = false;
         FrameGroups = false;
+        ImportIdMode = ImportIdMode.AppendAfterMax;
         ServerPath = null;
         ClientPath = null;
     }
@@ -171,12 +178,17 @@ public partial class MainWindow : Window
     private static readonly PresetSettings defaultPreset = new() {
         Name = "Default",
         Version = 1,
+        ImportIdMode = ImportIdMode.AppendAfterMax,
         ServerPath = "",
         ClientPath = "~\\Tibia\\packages\\Tibia\\assets"
     };
 
     public static PresetSettings? GetCurrentPreset() {
         return currentPreset;
+    }
+
+    public static ImportIdMode GetImportIdMode() {
+        return currentPreset?.ImportIdMode ?? ImportIdMode.AppendAfterMax;
     }
 
     private static string CastToAppData(string? path, string localAppData) {
@@ -1095,6 +1107,9 @@ public partial class MainWindow : Window
             _assetsPath += "\\";
         AssetsPath.Text = _assetsPath;
 
+        // update import id mode
+        ImportIdModeDropdown.SelectedIndex = (int)preset.ImportIdMode;
+
         // update version dropdown
         if (DatStructureDropdown.Items.Count > 0) {
             foreach (var item in DatStructureDropdown.Items) {
@@ -1132,6 +1147,15 @@ public partial class MainWindow : Window
 
     private void DatFrameGroup_Changed(object sender, RoutedEventArgs e) {
         currentPreset?.FrameGroups = DatFrameGroupsToggle.IsChecked ?? false;
+        SaveEditorSettings();
+    }
+
+    private void ImportIdMode_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) {
+        if (currentPreset == null || ImportIdModeDropdown.SelectedIndex < 0) {
+            return;
+        }
+
+        currentPreset.ImportIdMode = (ImportIdMode)ImportIdModeDropdown.SelectedIndex;
         SaveEditorSettings();
     }
 

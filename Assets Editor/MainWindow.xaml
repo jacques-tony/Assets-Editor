@@ -5,9 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Assets_Editor"
         mc:Ignorable="d"
-        Title="Assets Editor" Height="390" Width="600"
+        Title="Assets Editor" Height="450" Width="600" MinHeight="450" MinWidth="600"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        Style="{StaticResource MaterialDesignWindow}">
+        Style="{StaticResource MaterialDesignWindow}" ResizeMode="CanResizeWithGrip">
 
     <Window.Resources>
         <Style x:Key="SelectableTextBlockStyle" TargetType="TextBox">
@@ -157,12 +157,12 @@ ToolTip="Remove preset">
                 VerticalAlignment="Top"
                 Margin="9 -9 0 0"/>
 
-                <Grid Margin="0,10,0,0" Grid.Row="0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="130" />
-                    </Grid.RowDefinitions>
+                    <Grid Margin="0,10,0,0" Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
 
                     <Grid Grid.Row="0" Margin="0,10,0,0" HorizontalAlignment="Center">
                         <Grid.ColumnDefinitions>
@@ -289,6 +289,21 @@ ToolTip="Remove preset">
                             <StackPanel Orientation="Horizontal">
                                 <ToggleButton x:Name="DatFrameGroupsToggle" Margin="5,0,5,0" Checked="DatFrameGroup_Changed" Unchecked="DatFrameGroup_Changed" IsEnabled="False"/>
                                 <Label Content="Frame Groups"/>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Vertical" Margin="0,6,0,0">
+                                <Label Content="Import IDs:" Padding="0"/>
+                                <ComboBox x:Name="ImportIdModeDropdown"
+                                          Width="140"
+                                          Height="25"
+                                          Margin="0,2,0,0"
+                                          Padding="6,1,5,3"
+                                          IsReadOnly="True"
+                                          SelectedIndex="0"
+                                          SelectionChanged="ImportIdMode_SelectionChanged">
+                                    <ComboBoxItem Content="Append after max (padrão): Ignora ID Exportação"/>
+                                    <ComboBoxItem Content="Keep from export: Usar ID Exportação"/>
+                                </ComboBox>
                             </StackPanel>
                         </StackPanel>
 

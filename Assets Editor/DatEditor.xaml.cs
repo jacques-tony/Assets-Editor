@@ -2873,6 +2873,42 @@ namespace Assets_Editor
             return catalogs;
         }
 
+        private static uint GetNextAppearanceId(IList<Appearance> appearances, uint minStart)
+        {
+            if (appearances == null || appearances.Count == 0)
+            {
+                return minStart;
+            }
+
+            uint maxId = 0;
+            for (int i = 0; i < appearances.Count; i++)
+            {
+                uint id = appearances[i].Id;
+                if (id > maxId)
+                {
+                    maxId = id;
+                }
+            }
+
+            uint next = maxId + 1;
+            return next < minStart ? minStart : next;
+        }
+
+        private static uint ResolveImportedAppearanceId(IList<Appearance> appearances, uint minStart, uint incomingId)
+        {
+            if (MainWindow.GetImportIdMode() == ImportIdMode.AppendAfterMax)
+            {
+                return GetNextAppearanceId(appearances, minStart);
+            }
+
+            if (incomingId >= minStart && !appearances.Any(a => a.Id == incomingId))
+            {
+                return incomingId;
+            }
+
+            return GetNextAppearanceId(appearances, minStart);
+        }
+
         private void InternalImportAEC(string fileName)
         {
             Appearances appearances = new();
@@ -2972,15 +3008,7 @@ namespace Assets_Editor
             foreach (Appearance appearance in appearances.Outfit)
             {
                 appearance.SpriteData.Clear();
-
-                if (!MainWindow.appearances.Outfit.Any(a => a.Id == appearance.Id) && appearance.Id > 100)
-                {
-                    appearance.Id = appearance.Id;
-                }
-                else
-                {
-                    appearance.Id = MainWindow.appearances.Outfit[^1].Id + 1;
-                }
+                appearance.Id = ResolveImportedAppearanceId(MainWindow.appearances.Outfit, 1, appearance.Id);
                 MainWindow.appearances.Outfit.Add(appearance.Clone());
                 ThingsOutfit.Add(new ShowList() { Id = appearance.Id });
             }
@@ -2988,19 +3016,7 @@ namespace Assets_Editor
             foreach (Appearance appearance in appearances.Object)
             {
                 appearance.SpriteData.Clear();
-
-                // Preserve incoming id if it's not already used and is a valid item id (>100).
-                if (!MainWindow.appearances.Object.Any(a => a.Id == appearance.Id) && appearance.Id > 100)
-                {
-                    // keep provided id
-                }
-                else
-                {
-                    // otherwise assign a new unique id (last id + 1) as before
-                    appearance.Id = MainWindow.appearances.Object.Count > 0
-                        ? MainWindow.appearances.Object[^1].Id + 1
-                        : 100;
-                }
+                appearance.Id = ResolveImportedAppearanceId(MainWindow.appearances.Object, 100, appearance.Id);
 
                 if (appearance.Flags.Market != null && appearance.Flags.Market.HasTradeAsObjectId)
                 {
@@ -3036,14 +3052,7 @@ namespace Assets_Editor
             foreach (Appearance appearance in appearances.Effect)
             {
                 appearance.SpriteData.Clear();
-                if (!MainWindow.appearances.Effect.Any(a => a.Id == appearance.Id) && appearance.Id > 100)
-                {
-                    appearance.Id = appearance.Id;
-                }
-                else
-                {
-                    appearance.Id = MainWindow.appearances.Effect[^1].Id + 1;
-                }
+                appearance.Id = ResolveImportedAppearanceId(MainWindow.appearances.Effect, 1, appearance.Id);
                 MainWindow.appearances.Effect.Add(appearance.Clone());
                 ThingsEffect.Add(new ShowList() { Id = appearance.Id });
             }
@@ -3051,14 +3060,7 @@ namespace Assets_Editor
             foreach (Appearance appearance in appearances.Missile)
             {
                 appearance.SpriteData.Clear();
-                if (!MainWindow.appearances.Missile.Any(a => a.Id == appearance.Id) && appearance.Id > 100)
-                {
-                    appearance.Id = appearance.Id;
-                }
-                else
-                {
-                    appearance.Id = MainWindow.appearances.Missile[^1].Id + 1;
-                }
+                appearance.Id = ResolveImportedAppearanceId(MainWindow.appearances.Missile, 1, appearance.Id);
                 MainWindow.appearances.Missile.Add(appearance.Clone());
                 ThingsMissile.Add(new ShowList() { Id = appearance.Id });
             }
@@ -3276,21 +3278,13 @@ namespace Assets_Editor
 
             if (appearance.AppearanceType == APPEARANCE_TYPE.AppearanceOutfit)
             {
-                // update id if necessary
-                if (!(!MainWindow.appearances.Outfit.Any(a => a.Id == appearance.Id) && appearance.Id > 0))
-                {
-                    appearance.Id = MainWindow.appearances.Outfit.Count > 0 ? MainWindow.appearances.Outfit[^1].Id + 1u : 1u;
-                }
+                appearance.Id = ResolveImportedAppearanceId(MainWindow.appearances.Outfit, 1, appearance.Id);
                 MainWindow.appearances.Outfit.Add(appearance.Clone());
                 ThingsOutfit.Add(new ShowList() { Id = appearance.Id });
             }
             else if (appearance.AppearanceType == APPEARANCE_TYPE.AppearanceObject)
             {
-                // update id if necessary
-                if (!(!MainWindow.appearances.Object.Any(a => a.Id == appearance.Id) && appearance.Id > 100))
-                {
-                    appearance.Id = MainWindow.appearances.Object.Count > 0 ? MainWindow.appearances.Object[^1].Id + 1u : 100u;
-                }
+                appearance.Id = ResolveImportedAppearanceId(MainWindow.appearances.Object, 100, appearance.Id);
 
                 if (appearance.Flags.Market != null && appearance.Flags.Market.HasTradeAsObjectId)
                 {
@@ -3321,21 +3315,13 @@ namespace Assets_Editor
             }
             else if (appearance.AppearanceType == APPEARANCE_TYPE.AppearanceEffect)
             {
-                // update id if necessary
-                if (!(!MainWindow.appearances.Effect.Any(a => a.Id == appearance.Id) && appearance.Id > 0))
-                {
-                    appearance.Id = MainWindow.appearances.Effect.Count > 0 ? MainWindow.appearances.Effect[^1].Id + 1u : 1u;
-                }
+                appearance.Id = ResolveImportedAppearanceId(MainWindow.appearances.Effect, 1, appearance.Id);
                 MainWindow.appearances.Effect.Add(appearance.Clone());
                 ThingsEffect.Add(new ShowList() { Id = appearance.Id });
             }
             else if (appearance.AppearanceType == APPEARANCE_TYPE.AppearanceMissile)
             {
-                // update id if necessary
-                if (!(!MainWindow.appearances.Missile.Any(a => a.Id == appearance.Id) && appearance.Id > 0))
-                {
-                    appearance.Id = MainWindow.appearances.Missile.Count > 0 ? MainWindow.appearances.Missile[^1].Id + 1u : 1u;
-                }
+                appearance.Id = ResolveImportedAppearanceId(MainWindow.appearances.Missile, 1, appearance.Id);
                 MainWindow.appearances.Missile.Add(appearance.Clone());
                 ThingsMissile.Add(new ShowList() { Id = appearance.Id });
             }
@@ -3575,19 +3561,13 @@ namespace Assets_Editor
                     appearance.SpriteData.Clear();
                     if (appearance.AppearanceType == APPEARANCE_TYPE.AppearanceOutfit)
                     {
-                        if (!(!MainWindow.appearances.Outfit.Any(a => a.Id == appearance.Id) && appearance.Id > 0))
-                        {
-                            appearance.Id = MainWindow.appearances.Outfit.Count > 0 ? MainWindow.appearances.Outfit[^1].Id + 1u : 1u;
-                        }
+                        appearance.Id = ResolveImportedAppearanceId(MainWindow.appearances.Outfit, 1, appearance.Id);
                         MainWindow.appearances.Outfit.Add(appearance.Clone());
                         ThingsOutfit.Add(new ShowList() { Id = appearance.Id });
                     }
                     else if (appearance.AppearanceType == APPEARANCE_TYPE.AppearanceObject)
                     {
-                        if (!(!MainWindow.appearances.Object.Any(a => a.Id == appearance.Id) && appearance.Id > 100))
-                        {
-                            appearance.Id = MainWindow.appearances.Object.Count > 0 ? MainWindow.appearances.Object[^1].Id + 1u : 100u;
-                        }
+                        appearance.Id = ResolveImportedAppearanceId(MainWindow.appearances.Object, 100, appearance.Id);
                         if (appearance.Flags.Market != null && appearance.Flags.Market.HasTradeAsObjectId)
                         {
                             appearance.Flags.Market.TradeAsObjectId = appearance.Id;
@@ -3614,19 +3594,13 @@ namespace Assets_Editor
                     }
                     else if (appearance.AppearanceType == APPEARANCE_TYPE.AppearanceEffect)
                     {
-                        if (!(!MainWindow.appearances.Effect.Any(a => a.Id == appearance.Id) && appearance.Id > 0))
-                        {
-                            appearance.Id = MainWindow.appearances.Effect.Count > 0 ? MainWindow.appearances.Effect[^1].Id + 1u : 1u;
-                        }
+                        appearance.Id = ResolveImportedAppearanceId(MainWindow.appearances.Effect, 1, appearance.Id);
                         MainWindow.appearances.Effect.Add(appearance.Clone());
                         ThingsEffect.Add(new ShowList() { Id = appearance.Id });
                     }
                     else if (appearance.AppearanceType == APPEARANCE_TYPE.AppearanceMissile)
                     {
-                        if (!(!MainWindow.appearances.Missile.Any(a => a.Id == appearance.Id) && appearance.Id > 0))
-                        {
-                            appearance.Id = MainWindow.appearances.Missile.Count > 0 ? MainWindow.appearances.Missile[^1].Id + 1u : 1u;
-                        }
+                        appearance.Id = ResolveImportedAppearanceId(MainWindow.appearances.Missile, 1, appearance.Id);
                         MainWindow.appearances.Missile.Add(appearance.Clone());
                         ThingsMissile.Add(new ShowList() { Id = appearance.Id });
                     }
